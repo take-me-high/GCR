@@ -3,7 +3,7 @@
  * 商家列表页面
  * @Date: 2019-12-23 17:11:53 
  * @Last Modified by: dell
- * @Last Modified time: 2019-12-27 17:03:17
+ * @Last Modified time: 2019-12-28 20:33:49
  */
 <template>
     
@@ -23,18 +23,18 @@
     </el-select></div>
 
   <div class="footable">
-  <el-table ref="multipleTable" :data="businessPage" tooltip-effect="dark" @selection-change="handleSelectionChange">
+  <el-table ref="multipleTable" :data="businessPage" tooltip-effect="dark" @selection-change="handleSelectionChange" :default-sort = "{prop: 'name', order: 'descending'}">
     <el-table-column type="selection" width="55"></el-table-column>
-    <el-table-column label="公司名称" ><template slot-scope="scope">{{ scope.row.name }}</template></el-table-column>   
-    <el-table-column prop="contactName" label="联系人"></el-table-column>
+    <el-table-column label="公司名称"><template slot-scope="scope">{{ scope.row.name }}</template></el-table-column>   
+    <el-table-column prop="contactName" label="联系人" sortable></el-table-column>
     <el-table-column prop="contactPhone" label="联系方式"></el-table-column>
-    <el-table-column prop="industry" label="行业"></el-table-column>
+    <el-table-column prop="industry" label="行业" sortable></el-table-column>
     <el-table-column label="所在地"><template slot-scope="scope">{{ scope.row.province }}--{{scope.row.city}}</template></el-table-column>
-    <el-table-column prop="scale" label="公司规模"></el-table-column>
+    <el-table-column prop="scale" label="公司规模" sortable></el-table-column>
     <el-table-column label="详情"><template slot-scope="scope">
-      <el-button @click="toSee(scope.row)" type="primary" size="small" icon="el-icon-info">查看</el-button></template></el-table-column>
+      <el-button @click="toSee(scope.row)" type="warning" size="small" icon="el-icon-info">查看</el-button></template></el-table-column>
     <el-table-column label="操作" show-overflow-tooltip><template slot-scope="scope">
-        <el-button @click="open(scope.row.id)" type="primary" size="small" icon="el-icon-delete">删除</el-button>
+        <el-button @click="open(scope.row.id)" type="danger" size="small" icon="el-icon-delete">删除</el-button>
         <el-button @click="toEdit(scope.row)" type="primary" size="small" icon="el-icon-edit">编辑</el-button>
       </template>
     </el-table-column>  
@@ -45,7 +45,7 @@
     <el-button type="danger" icon="el-icon-delete" @click="toDeleteMore">批量删除</el-button>
   </div>
   <div class="pagDiv" style="float:right">
-    <el-pagination @current-change="currentChange" :current-page.sync="currentPage" background layout="prev, pager, next" :total="businessData.length*2"></el-pagination>
+    <el-pagination @current-change="currentChange" :current-page.sync="currentPage" background layout="prev, pager, next" :total="businessData.length"></el-pagination>
   </div>
 
   <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible"  >
@@ -246,12 +246,15 @@ export default {
     businessPage(){
           let temp = [...this.businessData];
           //截取数组
-          let pageSize = 5;
+          let pageSize = config.pageSize;
           let page = this.currentPage;
           return temp.slice((page-1)*pageSize,page*pageSize);//开始位置，结束位置（不包括结束位置）
       },
   },
   methods: {
+    formatter(row, column) {
+        return row.name;
+      },
     //右上角，模态框关闭之前
     beforeClose() {
       this.$refs["business"].resetFields();
